@@ -9,44 +9,18 @@ import { avatarPlaceholderUrl } from "@/constants";
 import { send } from "process";
 
 
-// import { createAdminClient } from "@/lib/appwrite"
-
-export const testAdminAccess = async () => {
-  try {
-    const { database } = await createAdminClient();
-
-    const result = await database.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.usersCollectionId,
-      // Fetching a limited number of documents for testing
-    );
-
-    console.log("✅ Admin access successful. Documents:", result.documents);
-    return true;
-  } catch (error) {
-    console.error("❌ Admin access failed:", error);
-    return false;
-  }
-};
-
 export const getUserByEmail = async (email: string) => {
   // try {
     console.log("Fetching user by email:");
     if (!email) throw new Error("Email is required to fetch user");
-    // const { database } = await createAdminClient();
-    // console.log("admin client created successfully");
-    // const result = await database.listDocuments(
-    //   appwriteConfig.databaseId,
-    //   appwriteConfig.usersCollectionId,
-    //   [Query.equal("Email", [email])]
-    // );
-const { database } = await createAdminClient();
-const result = await database.listDocuments(
-  appwriteConfig.databaseId,
-  appwriteConfig.usersCollectionId,
-  
-);
-console.log(result);
+    const { database } = await createAdminClient();
+    console.log("admin client created successfully");
+    const result = await database.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.usersCollectionId,
+      [Query.equal("Email", [email])]
+    );
+    console.log(result);
 
     console.log("fetched");
     return result.documents[0] || null;
@@ -91,7 +65,7 @@ export const createAccount = async ({
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       ID.unique(),
-      { username, email, avatar: avatarPlaceholderUrl,accountId }
+      { Email:email, avatar: avatarPlaceholderUrl,Fullname: username,accountId }
     );
   }
   return parseStringify({ accountId });

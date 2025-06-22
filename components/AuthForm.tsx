@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input"
 import { imageConfigDefault } from "next/dist/shared/lib/image-config"
 import { set } from "zod/v4-mini"
 import { create } from "domain"
-import { createAccount, testAdminAccess } from "@/lib/actions/users.action"
+import { createAccount } from "@/lib/actions/users.action"
 import OTPmodal from "./OTPmodal"
 import { type } from "os"
 import { accountCreate } from "@/lib/appwrite/SignUp"
@@ -35,7 +35,7 @@ type AuthFormProps = {
 
 // type FormType = "signIn" | "signUp";
 
-const formSchema = (type: AuthFormProps) => {
+const formSchema = (type: "signIn" | "signUp") => {
   return z.object({
     username: type === "signUp"
       ? z.string({
@@ -83,61 +83,23 @@ const formSchema = (type: AuthFormProps) => {
 
   const schema = formSchema(type);
 
-  //   const onSubmit = async (data: any) => {
-  //     setLoading(true);
-  //     setErrormsg("");
-
-  //     if(type==="signUp") {
-  //     try {
-  //       console.log("Submitting with:", data.username, data.email);
-  //       const user = await accountCreate({
-  //         username: data.username || "",
-  //         email: data.email,
-  //       });
-  //       console.log("User created:", user);
-  //     } catch (error) {
-  //       console.error("Error during form submission:", error);
-  //       setErrormsg("user account cold not be created");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   }
-  //   else{//for sign in
-  //     try {
-  //       console.log("Form submitted with data:", data);
-  //       // Handle form submission logic here, e.g., API call
-  //       console.log("Submitting with:", data.username, data.email);
-  //       const user = await Login({
-  //         username: data.username || "",
-  //         email: data.email,
-  //       });
-  //       console.log("redirceting");
-  //       router.push("/");
-
-  //       console.log("logged in", user);
-  //     } catch (error) {
-  //       console.error("Error during form submission:", error);
-  //       setErrormsg("An error occurred. Please try again.");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-
-  //   }
-  // }
+  //   
 
   // const schema = formSchema(type);
 
-const onSubmit = async (values: z.infer<typeof schema>) => {
-  setLoading(true);
-  try {
-    const result = await testAdminAccess(); // ✅ Call the function directly
-    alert(result ? "✅ Admin access works!" : "❌ Admin access failed.");
-  } catch (error) {
-    console.error("Error testing admin access:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+// const onSubmit = async (values: z.infer<typeof schema>) => {
+//   setLoading(true);
+//   try {
+//     const result = await testAdminAccess(); // ✅ Call the function directly
+//     alert(result ? "✅ Admin access works!" : "❌ Admin access failed.");
+//     setLoading(false);
+//   } catch (error) {
+//     console.error("Error testing admin access:", error);
+//     setLoading(false);
+//   } finally {
+//     setLoading(false);
+//   }
+// };
 
 
     // try {
@@ -155,6 +117,36 @@ const onSubmit = async (values: z.infer<typeof schema>) => {
     // finally{
     //   setLoading(false);
     // }
+
+    const onSubmit = async (values: z.infer<typeof schema>) => {
+      setLoading(true);
+      setErrormsg("");
+      try {
+        if (type === "signUp") {
+          console.log("Submitting with:", values.username, values.email);
+          const user = await createAccount({
+            username: values.username || "",
+            email: values.email || "",
+          });
+          setAccountId(user.accountId);
+          console.log("Account ID:", user.accountId);
+        }
+        // } else {
+        //   console.log("Submitting with:", values.username, values.email);
+        //   const user = await Login({
+        //     username: values.username || "",
+        //     email: values.email || "",
+        //   });
+        //   console.log("Logged in user:", user);
+        //   router.push("/");
+        // }
+      } catch (error) {
+        console.error("Error during form submission:", error);
+        setErrormsg("An error occurred. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    }
     
 
 

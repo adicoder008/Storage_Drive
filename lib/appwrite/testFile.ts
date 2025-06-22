@@ -31,3 +31,47 @@ export const createAdminClient=async()=>{
 
 }
 }
+
+
+
+// const onSubmit = async (data: any) => {
+  //     setLoading(true);
+  //     setErrormsg("");
+
+  //     if(type==="signUp") {
+  //     try {
+  //       console.log("Submitting with:", data.username, data.email);
+  //       const user = await accountCreate({
+  //         username: data.username || "",
+  //         email: data.email,
+  //       });
+  //       console.log("User created:", user);
+  //     } catch (error) {
+  //       console.error("Error during form submission:", error);
+  //       setErrormsg("user account cold not be created");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+  //   else{//for sign in
+  //     try {
+  //       console.log("Form submitted with data:", data);
+  //       // Handle form submission logic here, e.g., API call
+  //       console.log("Submitting with:", data.username, data.email);
+  //       const user = await Login({
+  //         username: data.username || "",
+  //         email: data.email,
+  //       });
+  //       console.log("redirceting");
+  //       router.push("/");
+
+  //       console.log("logged in", user);
+  //     } catch (error) {
+  //       console.error("Error during form submission:", error);
+  //       setErrormsg("An error occurred. Please try again.");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+
+  //   }
+  // }
