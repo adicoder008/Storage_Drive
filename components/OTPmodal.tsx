@@ -32,34 +32,22 @@ const OTPmodal = ({email,accountID}:{email:string,accountID:string}) => {
         e.preventDefault();
         setIsLoading(true);
 
-        try {
-            console.log("verifying secret for accountID:", accountID, "with password:", password);
-            const sessionId=await verifySecret({accountID, password});
-            console.log("verified");
-            console.log("Session ID:", sessionId);
-            if(sessionId) router.push("/")
-        } catch (error) {
-            console.error("Error submitting OTP:", error);
-            
-        }
+        console.log({ accountID, password });
+
+    try {
+      const sessionId = await verifySecret({ accountId: accountID, password });
+
+      console.log({ sessionId });
+
+      if (sessionId) router.push("/");
+    } catch (error) {
+      console.log("Failed to verify OTP", error);
+    }
+
         setIsLoading(false);
 
     }
 
-
-    // const handleSubmit = async(values: z.infer<typeof formschema> ) => {
-    //     e.preventDefault();
-    //     setIsLoading(true);
-
-    //     try {
-    //         const user = await createAccount({email, password, accountID});
-    //     } catch (error) {
-    //         console.error("Error submitting OTP:", error);
-            
-    //     }
-    //     setIsLoading(false);
-
-    // }
 
     const handleResendOTP = async(e:React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();

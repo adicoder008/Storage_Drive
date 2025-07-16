@@ -11,11 +11,11 @@ import {
 import { usePathname } from 'next/navigation';
 
 interface Props {
-  ownerId: string;
-  AccountId: string;
-  avatar: string;
-  username: string;
-  email: string;
+  ownerId?: string;
+  AccountId?: string;
+  avatar?: string;
+  username?: string;
+  email?: string;
 }
 
 const MobileNav = ({ownerId,AccountId,avatar, username,email}:Props) => {

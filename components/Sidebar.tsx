@@ -6,12 +6,12 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
 interface Props {
-    username?: string;
-    email?: string;
+    Fullname?: string;
+    Email?: string;
     avatar?: string;
 }
 
-const Sidebar = ({username,email,avatar}: Props) => {
+const Sidebar = ({Fullname,Email,avatar}: Props) => {
     const pathname = usePathname();
 
     return (
@@ -49,11 +49,18 @@ const Sidebar = ({username,email,avatar}: Props) => {
 
                 </nav>
 
-                <img src="/assets/images/files-2.png" height={506} width={418} alt="" />
+                <img src="/assets/images/files-2.png" height={470} width={400} alt="" />
             </div>
             <div className='flex flex-col items-center justify-center gap-2 mt-4'>
-                <p>{email}</p>
-                <p>{username}</p>
+                
+                <img src={avatar} height={44} width={44} alt="" />
+                
+                <div className='flex flex-col text-sm'>
+                    <p>{Email}</p>
+                    <p>{Fullname}</p>
+                </div>
+                
+                
             </div>
         </div>
     )

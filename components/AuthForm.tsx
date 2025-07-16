@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input"
 import { imageConfigDefault } from "next/dist/shared/lib/image-config"
 import { set } from "zod/v4-mini"
 import { create } from "domain"
-import { createAccount } from "@/lib/actions/users.action"
+import { createAccount, signInUser } from "@/lib/actions/users.action"
 import OTPmodal from "./OTPmodal"
 import { type } from "os"
 import { accountCreate } from "@/lib/appwrite/SignUp"
@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { createAdminClient } from "@/lib/appwrite"
 import { appwriteConfig } from "@/lib/appwrite/config"
 import { Query, ID, Account, Client } from "appwrite";
+import { sign } from "crypto"
 
 
 type AuthFormProps = {
@@ -54,25 +55,6 @@ const formSchema = (type: "signIn" | "signUp") => {
 };
 
 
-
-
-// const AuthFormSchema = (type: FormType) => {
-// return z.object({
-// email: z.string().email(),
-// username: type === "signUp" ? z.string().min(2).max(50) : z.string().optional,
-// });
-// }
-
-// const AuthFormSchema = (type: FormType) => {
-//   return z.object({
-//     username: type === "signUp" ? z.string().min(2, "Username required") : z.string().optional(),
-//     email: type === "signUp" ? z.string().email("Invalid email") : z.string().optional(),
-//   });
-// };
-
-
-
-
  const AuthForm = ({ type }: AuthFormProps) => {
 
   const router = useRouter();
@@ -83,54 +65,21 @@ const formSchema = (type: "signIn" | "signUp") => {
 
   const schema = formSchema(type);
 
-  //   
-
-  // const schema = formSchema(type);
-
-// const onSubmit = async (values: z.infer<typeof schema>) => {
-//   setLoading(true);
-//   try {
-//     const result = await testAdminAccess(); // ✅ Call the function directly
-//     alert(result ? "✅ Admin access works!" : "❌ Admin access failed.");
-//     setLoading(false);
-//   } catch (error) {
-//     console.error("Error testing admin access:", error);
-//     setLoading(false);
-//   } finally {
-//     setLoading(false);
-//   }
-// };
-
-
-    // try {
-    //   const user = await createAccount({//after awaiting accountId can be accessed
-    //     username: values.username || "",
-    //     email: values.email || "",
-    //   });
-    //   setAccountId(user.accountId);
-    //   console.log("Account ID:", user.accountId);
-     
-    // } catch (error) {
-    //   console.error("Error during form submission:", error);
-
-    // }
-    // finally{
-    //   setLoading(false);
-    // }
-
     const onSubmit = async (values: z.infer<typeof schema>) => {
       setLoading(true);
       setErrormsg("");
       try {
-        if (type === "signUp") {
+        // if (type === "signUp") {
           console.log("Submitting with:", values.username, values.email);
-          const user = await createAccount({
+          const user = 
+          type==='signUp'?
+          await createAccount({
             username: values.username || "",
             email: values.email || "",
-          });
+          }): await signInUser({email: values.email || ""});
           setAccountId(user.accountId);
           console.log("Account ID:", user.accountId);
-        }
+        // }
         // } else {
         //   console.log("Submitting with:", values.username, values.email);
         //   const user = await Login({
@@ -164,6 +113,7 @@ const formSchema = (type: "signIn" | "signUp") => {
   return (
     <>
       <div className="flex flex-col w-full items-center">
+        <div className="text-3xl text-red-500 font-semibold">{type==="signIn"?"SIGN IN" : "SIGN UP"}</div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 auth-form w-3/4">
             <h1 className="text-center text-3xl">{type === "signIn" ? "Sign In" : "Sign Up"}</h1>
@@ -242,11 +192,14 @@ const formSchema = (type: "signIn" | "signUp") => {
             </div>
           </form>
         </Form>
-        {/* <OTPmodal/> */}
-        {accountId && (
-          <OTPmodal email={form.getValues("email") ?? ""} accountID={accountId ?? ""} />
-        )}
-        <div>{process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}</div>
+        {/* <OTPmodal/> */} 
+         {/* {accountId && (
+         <OTPmodal email={form.getValues("email") ?? ""} accountID={accountId ?? ""} />
+        )} */}
+         {/* {accountId && ( */}
+        <OTPmodal email={form.getValues("email")?? ""} accountID={accountId ?? ""} />
+      {/* )} */}
+        
       </div>
     </>
   );
