@@ -18,7 +18,7 @@ import {
     // InputOTPSeparator,
     InputOTPSlot,
 } from "@/components/ui/input-otp"
-import { createAccount, sendEmailOTP, verifySecret } from '@/lib/actions/users.action'
+import {  sendEmailOTP, verifySecret } from '@/lib/actions/users.action'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image';
 

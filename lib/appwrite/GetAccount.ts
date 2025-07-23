@@ -17,7 +17,7 @@ export const getCurrentUser = async () => {
     console.log("Userhh fetched:", result);
     return result;
   } catch (error) {
-    console.log("No active session:");
+    console.log(error,"No active session:");
     return null;
   }
 }

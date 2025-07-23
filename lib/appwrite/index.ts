@@ -2,7 +2,7 @@
 import { Account, Avatars, Client, Databases, Storage } from "node-appwrite";
 import { appwriteConfig } from "./config"
 import { cookies } from "next/headers"
-import { Users } from "lucide-react";
+
 
 export const createSessionClient = async () => {
     console.log("Creating session client...");

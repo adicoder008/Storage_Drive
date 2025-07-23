@@ -8,7 +8,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { usePathname } from 'next/navigation';
+// import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 
 interface Props {
@@ -21,7 +21,7 @@ interface Props {
 
 const MobileNav = ({ownerId,AccountId,avatar, username,email}:Props) => {
   const [open, setOpen] = React.useState(false);
-  const pathname=usePathname();
+  // const pathname=usePathname();
 
   return (
     <header className="lg:hidden">
@@ -35,6 +35,13 @@ const MobileNav = ({ownerId,AccountId,avatar, username,email}:Props) => {
             <SheetDescription>
               This action cannot be undone. This will permanently delete your account
               and remove your data from our servers.
+              <ul>
+                <li>{ownerId}</li>
+                <li>{AccountId}</li>
+                <li>{avatar}</li>
+                <li>{username}</li>
+                <li>{email}</li>
+              </ul>
             </SheetDescription>
           </SheetHeader>
         </SheetContent>

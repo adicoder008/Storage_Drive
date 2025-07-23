@@ -7,17 +7,17 @@ import { MAX_FILE_SIZE } from "@/constants";
 import { uploadFile } from "@/lib/actions/files.actions";
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button";
-import { cn, convertFileToUrl, getFileType } from "@/lib/utils";
+import { convertFileToUrl, getFileType } from "@/lib/utils";
 import Thumbnail from "@/components/Thumbnail";
 import Image from "next/image";
 
 interface Props {
   ownerId: string;
   accountId: string;
-  className?: string;
+  // className?: string;
 }
 
-const FileUploader = ({ ownerId, accountId, className }: Props) => {
+const FileUploader = ({ ownerId, accountId }: Props) => {
 
   const path = usePathname();
   

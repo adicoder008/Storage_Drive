@@ -1,13 +1,12 @@
 "use server"
 // This file contains server-side actions related to user management using Appwrite.
-import { Query, ID, Account, Client } from "node-appwrite";
+import { Query, ID } from "node-appwrite";
 import { createAdminClient, createSessionClient } from "../appwrite/index";
 import { appwriteConfig } from "../appwrite/config";
 import { parseStringify } from "../utils";
 import { cookies } from "next/headers";
 import { avatarPlaceholderUrl } from "@/constants";
-import { send } from "process";
-import { use } from "react";
+
 import { redirect } from "next/navigation";
 
 
@@ -62,7 +61,8 @@ export const createAccount = async ({
   
   if(!existingUser) {//if no existing user found, create a new user
     console.log("No existing user found, creating a new user...");
-    const { account, database } = await createAdminClient();
+    // const { account, database } = await createAdminClient();
+    const { database } = await createAdminClient();
 
     await database.createDocument(
       appwriteConfig.databaseId,
