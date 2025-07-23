@@ -23,7 +23,7 @@ import OTPmodal from "./OTPmodal"
 // import { type } from "os"
 // import { accountCreate } from "@/lib/appwrite/SignUp"
 // import { Login } from "@/lib/appwrite/Login"
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 // import { createAdminClient } from "@/lib/appwrite"
 // import { appwriteConfig } from "@/lib/appwrite/config"
 // import { Query, ID, Account, Client } from "appwrite";
@@ -58,7 +58,7 @@ const formSchema = (type: "signIn" | "signUp") => {
 
  const AuthForm = ({ type }: AuthFormProps) => {
 
-  const router = useRouter();
+  // const router = useRouter();
 
   const [loading, setLoading] = useState(false);
   const [errormsg, setErrormsg] = useState("");
