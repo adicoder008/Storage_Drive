@@ -8,26 +8,27 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
+  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { imageConfigDefault } from "next/dist/shared/lib/image-config"
-import { set } from "zod/v4-mini"
-import { create } from "domain"
+// import { imageConfigDefault } from "next/dist/shared/lib/image-config"
+// import { set } from "zod/v4-mini"
+// import { create } from "domain"
 import { createAccount, signInUser } from "@/lib/actions/users.action"
 import OTPmodal from "./OTPmodal"
-import { type } from "os"
-import { accountCreate } from "@/lib/appwrite/SignUp"
-import { Login } from "@/lib/appwrite/Login"
+// import { type } from "os"
+// import { accountCreate } from "@/lib/appwrite/SignUp"
+// import { Login } from "@/lib/appwrite/Login"
 import { useRouter } from "next/navigation";
-import { createAdminClient } from "@/lib/appwrite"
-import { appwriteConfig } from "@/lib/appwrite/config"
-import { Query, ID, Account, Client } from "appwrite";
-import { sign } from "crypto"
+// import { createAdminClient } from "@/lib/appwrite"
+// import { appwriteConfig } from "@/lib/appwrite/config"
+// import { Query, ID, Account, Client } from "appwrite";
+// import { sign } from "crypto"
+import Image from "next/image";
 
 
 type AuthFormProps = {
@@ -182,7 +183,7 @@ const formSchema = (type: "signIn" | "signUp") => {
               )}
             />}
             <Button type="submit" className="w-full text-center bg-red-400 text-white" disabled={loading}>{type === "signIn" ? "Sign In" : "Sign Up"}
-              {loading && <img src="/assets/icons/loader.svg" className="animate-spin" alt="" />}
+              {loading && <Image src="/assets/icons/loader.svg" className="animate-spin" alt="" />}
             </Button>
             {/* we use * for dynamic rendering */}
             {errormsg && <p className="text-red-500 text-center">*{errormsg}</p>}

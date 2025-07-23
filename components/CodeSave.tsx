@@ -8,20 +8,21 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
+  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { imageConfigDefault } from "next/dist/shared/lib/image-config"
-import { set } from "zod/v4-mini"
-import { create } from "domain"
-import { createAccount } from "@/lib/actions/users.action"
-import OTPmodal from "./OTPmodal"
-import { type } from "os"
+// import { imageConfigDefault } from "next/dist/shared/lib/image-config"
+// import { set } from "zod/v4-mini"
+// import { create } from "domain"
+// import { createAccount } from "@/lib/actions/users.action"
+// import OTPmodal from "./OTPmodal"
+// import { type } from "os"
 import { accountCreate } from "@/lib/appwrite/SignUp"
+import Image from "next/image"
 
 
 type AuthFormProps = {
@@ -148,7 +149,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
           )}
         />}
         <Button type="submit" className="w-full text-center bg-red-400 text-white" disabled={loading}>{type==="signIn"?"Sign In":"Sign Up"}
-          {loading && <img src="/assets/icons/loader.svg" className="animate-spin" alt="" /> }
+          {loading && <Image src="/assets/icons/loader.svg" className="animate-spin" alt="" /> }
         </Button>
         {/* we use * for dynamic rendering */}
         {errormsg && <p className="text-red-500 text-center">*{errormsg}</p>}

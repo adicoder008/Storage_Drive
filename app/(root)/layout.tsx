@@ -1,7 +1,7 @@
 import Header from '@/components/Header'
 import MobileNav from '@/components/MobileNav'
 import Sidebar from '@/components/Sidebar'
-import { getUserByEmail } from '@/lib/actions/users.action'
+// import { getUserByEmail } from '@/lib/actions/users.action'
 import { getCurrentUser } from '@/lib/actions/users.action'
 import { redirect } from 'next/navigation' //next/vaigation is imp
 import React from 'react'

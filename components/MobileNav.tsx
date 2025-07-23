@@ -9,6 +9,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 
 interface Props {
   ownerId?: string;
@@ -24,10 +25,10 @@ const MobileNav = ({ownerId,AccountId,avatar, username,email}:Props) => {
 
   return (
     <header className="lg:hidden">
-      <img src="/assets/icons/logo-full-brand.svg" height={52} width={120} alt="" /> 
+      <Image src="/assets/icons/logo-full-brand.svg" height={52} width={120} alt="" /> 
 
       <Sheet open={open} onOpenChange={setOpen} >
-        <SheetTrigger><img src="/assets/icons/menu.svg" width={30} height={30} alt="" /></SheetTrigger>
+        <SheetTrigger><Image src="/assets/icons/menu.svg" width={30} height={30} alt="" /></SheetTrigger>
         <SheetContent className='bg-white text-black w-[80%]'>
           <SheetHeader>
             <SheetTitle>Are you absolutely sure?</SheetTitle>

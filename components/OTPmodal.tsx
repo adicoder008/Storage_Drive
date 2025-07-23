@@ -4,7 +4,7 @@ import { useState } from 'react'
 import {
     AlertDialog,
     AlertDialogAction,
-    AlertDialogCancel,
+    // AlertDialogCancel,
     AlertDialogContent,
     AlertDialogDescription,
     AlertDialogFooter,
@@ -15,11 +15,12 @@ import {
 import {
     InputOTP,
     InputOTPGroup,
-    InputOTPSeparator,
+    // InputOTPSeparator,
     InputOTPSlot,
 } from "@/components/ui/input-otp"
 import { createAccount, sendEmailOTP, verifySecret } from '@/lib/actions/users.action'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image';
 
 
 const OTPmodal = ({email,accountID}:{email:string,accountID:string}) => {
@@ -66,7 +67,7 @@ const OTPmodal = ({email,accountID}:{email:string,accountID:string}) => {
                     <AlertDialogHeader className='relative flex justify-center'>
                         <AlertDialogTitle className='text-2xl flex text-center'>
                             <div className='w-[95%]'>Enter your OTP</div>
-                            <img src="/assets/icons/close-dark.svg" height={20} width={20} onClick={()=>setIsOpen(false)} alt="" />
+                            <Image src="/assets/icons/close-dark.svg" height={20} width={20} onClick={()=>setIsOpen(false)} alt="" />
                         </AlertDialogTitle>
                         <AlertDialogDescription className='text-center text-lg'>
                             We have sent an email to <span>{email}</span>
@@ -90,7 +91,7 @@ const OTPmodal = ({email,accountID}:{email:string,accountID:string}) => {
                     <AlertDialogFooter>
                         <div className='flex w-full flex-col gap-4'>
                             <AlertDialogAction onClick={handleSubmit}  disabled={isLoading} className='bg-red-400 text-lg font-semibold px-3 py-2 text-center'>Submit
-                               {isLoading && (<img src=".assets/icons/loader.svg" height={24} width={24} className='ml-2 animate-spin' alt="" />)}
+                               {isLoading && (<Image src=".assets/icons/loader.svg" height={24} width={24} className='ml-2 animate-spin' alt="" />)}
                             </AlertDialogAction>
                                 <div className='text-center'>Didnt get an OTP ?
                                     <button type='button' className='bg-red-400 px-2 py-1 text-white ml-2 rounded-md' onClick={handleResendOTP} disabled={isLoading}>click to resend</button>
