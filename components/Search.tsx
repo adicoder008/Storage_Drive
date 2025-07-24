@@ -40,7 +40,7 @@ const Search = () => {
     if (!searchQuery) {
       setQuery("");
     }
-  }, [searchQuery]);
+  }, [debouncedQuery, router, path, searchParams]);
 
   const handleClickItem = (file: Models.Document) => {
     setOpen(false);
