@@ -1,120 +1,190 @@
+# DriveManager – Cloud Storage Platform
 
-<div align="center">
-  <br />
-    <a href="https://youtu.be/lie0cr3wESQ" target="_blank">
-      <img src="public/readme/hero.png" alt="Project Banner">
-    </a>
-  <br />
+DriveManager is a full-stack cloud storage system that allows users to upload, organize, search, and securely share files.  
+The system is designed with **metadata–storage separation**, **content-addressable storage**, and **real-time updates**, demonstrating practical system design concepts.
 
-  <div>
-     <img src="https://img.shields.io/badge/-Next_JS-black?style=for-the-badge&logoColor=white&logo=nextdotjs&color=000000" alt="nextdotjs" />
-    <img src="https://img.shields.io/badge/-TypeScript-black?style=for-the-badge&logoColor=white&logo=typescript&color=3178C6" alt="typescript" />
-    <img src="https://img.shields.io/badge/-Tailwind_CSS-black?style=for-the-badge&logoColor=white&logo=tailwindcss&color=06B6D4" alt="tailwindcss" />
-    <img src="https://img.shields.io/badge/-Appwrite-black?style=for-the-badge&logoColor=white&logo=appwrite&color=FD366E" alt="appwrite" />
-  </div>
+---
 
-<h3 align="center">Storage and File Sharing Platform</h3>
+# Screenshots
 
-   <div align="center">
-     Build this project step by step with our detailed tutorial on <a href="https://www.youtube.com/@javascriptmastery/videos" target="_blank"><b>JavaScript Mastery</b></a> YouTube. Join the JSM family!
-    </div>
-</div>
+### Dashboard
+![Dashboard Screenshot](./screenshots/dashboard.png)
 
-## 📋 <a name="table">Table of Contents</a>
+### File Upload
+![Upload Screenshot](./screenshots/upload.png)
 
-1. 🤖 [Introduction](#introduction)
-2. ⚙️ [Tech Stack](#tech-stack)
-3. 🔋 [Features](#features)
-4. 🤸 [Quick Start](#quick-start)
-5. 🔗 [Live Demo](#links)
+### File Search
+![Search Screenshot](./screenshots/search.png)
+
+### File Sharing
+![Sharing Screenshot](./screenshots/share.png)
+
+---
+
+# Features
+
+## File Upload & Management
+
+- Upload files up to **50MB per file**
+- Preview files with thumbnails
+- Rename, delete, and download files
+- Categorization by file type (documents, media, images, others)
+
+---
+
+## Content-Addressable Storage
+
+- Implemented **SHA-256 hashing** to detect duplicate files
+- Prevents redundant uploads and reduces storage usage
+- Multiple users can reference the same file without duplicating storage
+
+---
+
+## Secure File Sharing
+
+- Generate **signed share links**
+- Links copied to clipboard for quick sharing
+- Access control handled through database metadata
+
+---
+
+## Multi-User Access
+
+- Files can be shared with multiple users
+- Shared users gain access instantly
+- Shared files appear without refreshing
+
+---
+
+## Real-Time Updates
+
+- Uses **Appwrite Realtime subscriptions**
+- New uploads and shared files appear immediately across clients
+
+---
+
+## Search System
+
+- Debounced search for efficient queries
+- Supports searching by:
+
+- file name  
+- file type  
+- extension  
+
+---
+
+## Sorting
+
+Files can be sorted by:
+
+- newest
+- oldest
+- largest
+- name
+
+---
+
+## Storage Quota Enforcement
+
+- Upload requests check user storage usage
+- Prevents users from exceeding storage limits
+
+---
+
+# System Architecture
 
 
-## <a name="introduction">🤖 Introduction</a>
-
-A storage management and file sharing platform that lets users effortlessly upload, organize, and share files. Built with the latest Next.js 15 and the Appwrite Node SDK, utilizing advanced features for seamless file management.
 
 
-## <a name="tech-stack">⚙️ Tech Stack</a>
 
-- React 19
+
+---
+
+# Metadata Layer
+
+Stores:
+
+- file name
+- owner
+- shared users
+- file size
+- file type
+- hash
+- storage reference
+
+---
+
+# Storage Layer
+
+Stores the **actual binary file data**.
+
+Metadata references files using:
+
+
+
+
+
+---
+
+# Tech Stack
+
+## Frontend
+
 - Next.js 15
-- Appwrite
-- TailwindCSS
-- ShadCN
-- TypeScript
+- React
+- Tailwind CSS
+- shadcn/ui
 
-## <a name="features">🔋 Features</a>
+## Backend
 
-👉 **User Authentication with Appwrite**: Implement signup, login, and logout functionality using Appwrite's authentication system.
+- Next.js Server Actions
+- Appwrite Database
+- Appwrite Storage
+- Appwrite Realtime
 
-👉 **FIle Uploads**: Effortlessly upload a variety of file types, including documents, images, videos, and audio, ensuring all your important data.
+## Utilities
 
-👉 **View and Manage Files**: Users can browse through their uploaded files stored in Appwrite storage, view on a new tab, rename file or delete.
+- Zod validation
+- React Hook Form
+- Debounced search
 
-👉 **Download Files**: Users can download their uploaded files giving them instant access to essential documents.
+---
 
-👉 **File Sharing**: Users can easily share their uploaded files with others, enabling collaboration and easy access to important content.
+# Key Design Decisions
 
-👉 **Dashboard**: Gain insights at a glance with a dynamic dashboard that showcases total and consumed storage, recent uploads, and a summary of files grouped by type.
+## Metadata and Storage Separation
 
-👉 **Global Search**: Users can quickly find files and shared content across the platform with a robust global search feature.
+Binary files are stored in **Appwrite Storage**, while metadata is stored in **Appwrite Database**.  
+This allows efficient search, filtering, and permission management.
 
-👉 **Sorting Options**: Organize files efficiently by sorting them by date, name, or size, making file management a breeze.
+---
 
-👉 **Modern Responsive Design**: A fresh and minimalist UI that emphasizes usability, ensuring a clean aesthetic across all devices.
+## Deduplication Using Hashing
 
-and many more, including the latest **React 19**, **Next.js 15** and **Appwrite** features alongside code architecture and
-reusability
+Files are hashed using **SHA-256** before upload.
 
-## <a name="quick-start">🤸 Quick Start</a>
+If the hash already exists, the system reuses the stored file instead of uploading again.
 
-Follow these steps to set up the project locally on your machine.
+---
 
-**Prerequisites**
+## Real-Time Updates
 
-Make sure you have the following installed on your machine:
+Appwrite realtime subscriptions push updates to clients, eliminating the need for manual refresh.
 
-- [Git](https://git-scm.com/)
-- [Node.js](https://nodejs.org/en)
-- [npm](https://www.npmjs.com/) (Node Package Manager)
+---
 
-**Cloning the Repository**
+# Future Improvements
 
-```bash
-git clone https://github.com/adicoder008/Storage_Drive.git
+- Role-based file permissions (viewer/editor)
+- Background file processing (thumbnail generation)
+- Full-text search indexing
+- Rate limiting and abuse protection
 
-```
+---
 
-**Installation**
+# Author
 
-Install the project dependencies using npm:
-
-```bash
-npm install
-```
-
-**Set Up Environment Variables**
-
-Create a new file named `.env.local` in the root of your project and add the following content:
-
-```env
-NEXT_PUBLIC_APPWRITE_ENDPOINT="https://cloud.appwrite.io/v1"
-NEXT_PUBLIC_APPWRITE_PROJECT=""
-NEXT_PUBLIC_APPWRITE_DATABASE=""
-NEXT_PUBLIC_APPWRITE_USERS_COLLECTION=""
-NEXT_PUBLIC_APPWRITE_FILES_COLLECTION=""
-NEXT_PUBLIC_APPWRITE_BUCKET=""
-NEXT_APPWRITE_KEY=""
-```
-
-Replace the values with your actual Appwrite credentials. You can obtain these credentials by signing up &
-creating a new project on the [Appwrite website](https://appwrite.io/).
-
-**Running the Project**
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser to view the project.
-
+Adi  
+NITK Surathkal  
+Full-stack developer focused on building scalable systems.
