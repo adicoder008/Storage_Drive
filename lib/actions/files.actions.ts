@@ -7,11 +7,61 @@ import { ID, Models, Query } from "node-appwrite";
 import { constructFileUrl, getFileType, parseStringify } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "../actions/users.action";
+import { generateFileHash } from "@/lib/hash";
+import { generateShareToken } from "../share";
 
 const handleError = (error: unknown, message: string) => {
   console.log(error, message);
   throw error;
 };
+
+// export const uploadFile = async ({
+//   file,
+//   ownerId,
+//   accountId,
+//   path,
+// }: UploadFileProps) => {
+//   const { storage, database } = await createAdminClient();
+
+//   try {
+//     const inputFile = InputFile.fromBuffer(file, file.name);
+
+//     const bucketFile = await storage.createFile(
+//       appwriteConfig.bucketId,
+//       ID.unique(),
+//       inputFile,
+//     );
+
+//     const fileDocument = {
+//       type: getFileType(bucketFile.name).type,
+//       Name: bucketFile.name,
+//       url: constructFileUrl(bucketFile.$id),
+//       extension: getFileType(bucketFile.name).extension,
+//       size: bucketFile.sizeOriginal,
+//       owner: ownerId,
+//       accountId,
+//       users: [],
+//       bucketFileId: bucketFile.$id,
+//     };
+
+//     const newFile = await database
+//       .createDocument(
+//         appwriteConfig.databaseId,
+//         appwriteConfig.filesCollectionId,
+//         ID.unique(),
+//         fileDocument,
+//       )
+//       .catch(async (error: unknown) => {
+//         await storage.deleteFile(appwriteConfig.bucketId, bucketFile.$id);
+//         handleError(error, "Failed to create file document");
+//       });
+
+//     revalidatePath(path);
+//     return parseStringify(newFile);
+//   } catch (error) {
+//     handleError(error, "Failed to upload file");
+//   }
+// };
 
 export const uploadFile = async ({
   file,
@@ -19,43 +69,65 @@ export const uploadFile = async ({
   accountId,
   path,
 }: UploadFileProps) => {
+
   const { storage, database } = await createAdminClient();
 
   try {
-    const inputFile = InputFile.fromBuffer(file, file.name);
+
+    // STEP 1 — generate hash
+    const fileHash = await generateFileHash(file);
+
+    // STEP 2 — check if file already exists
+    const existingFiles = await database.listDocuments(
+  appwriteConfig.databaseId,
+  appwriteConfig.filesCollectionId,
+  [Query.equal("fileHash", [fileHash])]
+);
+
+if (existingFiles.documents.length > 0) {
+  // alert("File already exists. Skipping upload.");
+  console.log("File with same hash already exists:", existingFiles.documents[0]);
+
+  revalidatePath(path);
+  return parseStringify(existingFiles.documents[0]);
+}
+
+    // STEP 3 — upload file if hash not found
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const inputFile = InputFile.fromBuffer(buffer, file.name);
 
     const bucketFile = await storage.createFile(
       appwriteConfig.bucketId,
       ID.unique(),
-      inputFile,
+      inputFile
     );
 
+    const fileType = getFileType(bucketFile.name);
+
     const fileDocument = {
-      type: getFileType(bucketFile.name).type,
+      type: fileType.type,
       Name: bucketFile.name,
       url: constructFileUrl(bucketFile.$id),
-      extension: getFileType(bucketFile.name).extension,
+      extension: fileType.extension,
       size: bucketFile.sizeOriginal,
       owner: ownerId,
       accountId,
       users: [],
       bucketFileId: bucketFile.$id,
+      fileHash,
     };
 
-    const newFile = await database
-      .createDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.filesCollectionId,
-        ID.unique(),
-        fileDocument,
-      )
-      .catch(async (error: unknown) => {
-        await storage.deleteFile(appwriteConfig.bucketId, bucketFile.$id);
-        handleError(error, "Failed to create file document");
-      });
+    const newFile = await database.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.filesCollectionId,
+      ID.unique(),
+      fileDocument
+    );
 
     revalidatePath(path);
+
     return parseStringify(newFile);
+
   } catch (error) {
     handleError(error, "Failed to upload file");
   }
@@ -120,6 +192,32 @@ export const getFiles = async ({
   }
 };
 
+// export const renameFile = async ({
+//   fileId,
+//   name,
+//   extension,
+//   path,
+// }: RenameFileProps) => {
+//   const { database } = await createAdminClient();
+
+//   try {
+//     const newName = `${name}.${extension}`;
+//     const updatedFile = await database.updateDocument(
+//       appwriteConfig.databaseId,
+//       appwriteConfig.filesCollectionId,
+//       fileId,
+//       {
+//         name: newName,
+//       },
+//     );
+
+//     revalidatePath(path);
+//     return parseStringify(updatedFile);
+//   } catch (error) {
+//     handleError(error, "Failed to rename file");
+//   }
+// };
+
 export const renameFile = async ({
   fileId,
   name,
@@ -130,13 +228,14 @@ export const renameFile = async ({
 
   try {
     const newName = `${name}.${extension}`;
+
     const updatedFile = await database.updateDocument(
       appwriteConfig.databaseId,
       appwriteConfig.filesCollectionId,
       fileId,
       {
-        name: newName,
-      },
+        Name: newName,
+      }
     );
 
     revalidatePath(path);
@@ -235,4 +334,15 @@ export async function getTotalSpaceUsed() {
   } catch (error) {
     handleError(error, "Error calculating total space used:, ");
   }
+}
+
+
+export async function generateShareLink(fileId: string) {
+  const expires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+  const token = generateShareToken(fileId, expires);
+
+  const link = `${process.env.NEXT_PUBLIC_APP_URL}/share/${token}`;
+
+  return link;
 }

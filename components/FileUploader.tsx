@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { convertFileToUrl, getFileType } from "@/lib/utils";
 import Thumbnail from "@/components/Thumbnail";
 import Image from "next/image";
+import { generateShareLink } from "@/lib/actions/files.actions";
 
 interface Props {
   ownerId: string;
@@ -26,39 +27,67 @@ const FileUploader = ({ ownerId, accountId }: Props) => {
 //Stores an array of uploaded file objects (browser `File` type).
   const [files, setFiles] = useState<File[]>([]);
 
-  const onDrop = useCallback( async (acceptedFiles:File[]) => {
-    // Do something with the files
-    setFiles(acceptedFiles);
-    const uploadPromises = acceptedFiles.map(async (file) => {
-        if (file.size > MAX_FILE_SIZE) {
-          setFiles((prevFiles) =>
-            prevFiles.filter((f) => f.name !== file.name),
-          );
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
 
-          return toast(
-            <p className="">
-              <span className="font-semibold">{file.name}</span> is too large.
-              Max file size is 50MB.
-            </p>,
-            { className: "error-toast" }
-          );
-        }
+  setFiles(acceptedFiles);
 
-        return uploadFile({ file, ownerId, accountId, path }).then(
-          (uploadedFile) => {
-            if (uploadedFile) {
-              setFiles((prevFiles) =>
-                prevFiles.filter((f) => f.name !== file.name),
-              );
-            }
-          },
-        );
-      });
+  const uploadPromises = acceptedFiles.map(async (file) => {
 
-      await Promise.all(uploadPromises);
-    },
-    [ownerId, accountId, path],
-  );
+    if (file.size > MAX_FILE_SIZE) {
+
+      setFiles((prevFiles) =>
+        prevFiles.filter((f) => f.name !== file.name)
+      );
+
+      return toast(
+        <p>
+          <span className="font-semibold">{file.name}</span> is too large.
+          Max file size is 50MB.
+        </p>,
+        { className: "error-toast" }
+      );
+    }
+
+    const uploadedFile = await uploadFile({
+      file,
+      ownerId,
+      accountId,
+      path,
+    });
+
+    if (uploadedFile) {
+
+      setFiles((prevFiles) =>
+        prevFiles.filter((f) => f.name !== file.name)
+      );
+
+      // generate share link
+      const link = await generateShareLink(uploadedFile.bucketFileId);
+      await navigator.clipboard.writeText(link);
+
+      toast.success("Share link copied to clipboard");
+
+      console.log("Generated Share Link:", link);
+
+      alert(link);
+    }
+
+  });
+
+  await Promise.all(uploadPromises);
+
+}, [ownerId, accountId, path]);
+
+//   const onDrop = useCallback(async (acceptedFiles: File[]) => {
+
+//   const file = acceptedFiles[0];
+
+//   const hash = await generateFileHash(file);
+
+//   console.log("FILE HASH:", hash);
+
+// }, []); ---------->      Testing file hashing functionality. Uncomment and use in onDrop when needed.
+
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
   const handleRemoveFile = (
