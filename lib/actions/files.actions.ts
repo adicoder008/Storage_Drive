@@ -72,6 +72,16 @@ export const uploadFile = async ({
 
   const { storage, database } = await createAdminClient();
 
+  const totalSpace = await getTotalSpaceUsed();
+
+  if (!totalSpace) {
+    throw new Error("Failed to retrieve storage information.");
+  }
+
+  if (totalSpace.used + file.size > totalSpace.all) {
+    throw new Error("Storage quota exceeded. Delete files to upload more.");
+  }
+
   try {
 
     // STEP 1 — generate hash
@@ -133,31 +143,46 @@ if (existingFiles.documents.length > 0) {
   }
 };
 
-const createQueries = (
+const createQueries = (   // this is the exact function that we use in getFiles action, we just moved it out for better readability and maintainability
   currentUser: Models.Document,
   types: string[],
   searchText: string,
   sort: string,
   limit?: number,
 ) => {
-  if(!currentUser.Email) throw new Error("users not found");
+
+  if (!currentUser.Email) {
+    throw new Error("User email not found");
+  }
+
   const queries = [
     Query.or([
       Query.equal("owner", [currentUser.$id]),
-      
-      Query.contains("users", [currentUser.Email]),
+      Query.contains("users", currentUser.Email),
     ]),
   ];
 
   if (types.length > 0) queries.push(Query.equal("type", types));
-  if (searchText) queries.push(Query.contains("Name", searchText));
+
+  if (searchText) {
+  queries.push(
+    Query.or([
+      Query.contains("Name", searchText),
+      Query.contains("extension", searchText),
+      Query.contains("type", searchText),
+    ])
+  );
+}
+
   if (limit) queries.push(Query.limit(limit));
 
   if (sort) {
     const [sortBy, orderBy] = sort.split("-");
 
     queries.push(
-      orderBy === "asc" ? Query.orderAsc(sortBy) : Query.orderDesc(sortBy),
+      orderBy === "asc"
+        ? Query.orderAsc(sortBy)
+        : Query.orderDesc(sortBy)
     );
   }
 
@@ -247,27 +272,46 @@ export const renameFile = async ({
 
 export const updateFileUsers = async ({
   fileId,
-  emails,
+  email,
   path,
-}: UpdateFileUsersProps) => {
+}: {
+  fileId: string;
+  email: string;
+  path: string;
+}) => {
+
   const { database } = await createAdminClient();
 
   try {
+
+    const file = await database.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.filesCollectionId,
+      fileId
+    );
+
+    const existingUsers = file.users || []; // in case users field is missing, we treat it as empty array
+
+    const updatedUsers = Array.from(new Set([...existingUsers, email]));
+
     const updatedFile = await database.updateDocument(
       appwriteConfig.databaseId,
       appwriteConfig.filesCollectionId,
       fileId,
       {
-        users: emails,
-      },
+        users: updatedUsers,
+      }
     );
 
     revalidatePath(path);
+
     return parseStringify(updatedFile);
+
   } catch (error) {
-    handleError(error, "Failed to rename file");
+    handleError(error, "Failed to update shared users");
   }
 };
+
 
 export const deleteFile = async ({
   fileId,

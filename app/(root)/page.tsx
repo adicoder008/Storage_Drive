@@ -9,8 +9,12 @@ import  Thumbnail  from "@/components/Thumbnail";
 import { Separator } from "@/components/ui/separator";
 import { getFiles, getTotalSpaceUsed } from "@/lib/actions/files.actions";
 import { convertFileSize, getUsageSummary } from "@/lib/utils";
+// import { useState } from "react";
 
 const Dashboard = async () => {
+
+  // const [search, setSearch] = useState("");
+
   // Parallel requests
   const [files, totalSpace] = await Promise.all([
     getFiles({ types: [], limit: 10 }),
@@ -42,6 +46,9 @@ const Dashboard = async () => {
                     alt="uploaded image"
                     className="absolute -left-3 top-[-25px] z-10 w-[190px] object-contain !important"
                   />
+                  {/* <div>
+                    
+                  </div> */}
                   <h4 className="text-[18px] leading-[20px] font-medium relative z-20 w-full text-right !important;">
                     {convertFileSize(summary.size) || 0}
                   </h4>

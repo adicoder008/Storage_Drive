@@ -1,7 +1,5 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
-
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -29,6 +27,11 @@ const Search = () => {
       }
 
       const files = await getFiles({ types: [], searchText: debouncedQuery });
+      if (!files || files.documents.length === 0) {
+        setResults([]);
+        setOpen(true);
+        return;
+      }
       setResults(files.documents);
       setOpen(true);
     };
@@ -37,10 +40,8 @@ const Search = () => {
   }, [debouncedQuery]);
 
   useEffect(() => {
-    if (!searchQuery) {
-      setQuery("");
-    }
-  }, [debouncedQuery, router, path, searchParams]);
+  setQuery(searchQuery);
+}, [searchQuery]);
 
   const handleClickItem = (file: Models.Document) => {
     setOpen(false);

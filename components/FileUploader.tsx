@@ -21,62 +21,72 @@ interface Props {
 const FileUploader = ({ ownerId, accountId }: Props) => {
 
   const path = usePathname();
-  
-
-  //**Declares a React state variable** called `files`, initially an empty array.
-//Stores an array of uploaded file objects (browser `File` type).
   const [files, setFiles] = useState<File[]>([]);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
 
-  setFiles(acceptedFiles);
+    setFiles(acceptedFiles);
 
-  const uploadPromises = acceptedFiles.map(async (file) => {
+    const uploadPromises = acceptedFiles.map(async (file) => {
 
-    if (file.size > MAX_FILE_SIZE) {
+      try {
 
-      setFiles((prevFiles) =>
-        prevFiles.filter((f) => f.name !== file.name)
-      );
+        // File size validation
+        if (file.size > MAX_FILE_SIZE) {
 
-      return toast(
-        <p>
-          <span className="font-semibold">{file.name}</span> is too large.
-          Max file size is 50MB.
-        </p>,
-        { className: "error-toast" }
-      );
-    }
+          setFiles((prevFiles) =>
+            prevFiles.filter((f) => f.name !== file.name)
+          );
 
-    const uploadedFile = await uploadFile({
-      file,
-      ownerId,
-      accountId,
-      path,
+          return toast.error(
+            `${file.name} is too large. Max size is 50MB`
+          );
+        }
+
+        const uploadedFile = await uploadFile({
+          file,
+          ownerId,
+          accountId,
+          path,
+        });
+
+        if (!uploadedFile) {
+          throw new Error("Upload failed");
+        }
+
+        // remove from uploading list
+        setFiles((prevFiles) =>
+          prevFiles.filter((f) => f.name !== file.name)
+        );
+
+        // generate share link
+        const link = await generateShareLink(uploadedFile.bucketFileId);
+
+        // copy to clipboard
+        await navigator.clipboard.writeText(link);
+
+        toast.success("Share link copied to clipboard");
+
+        console.log("Generated Share Link:", link);
+
+      } catch (error: any) {
+
+        console.error("Upload error:", error);
+
+        toast.error(
+          error?.message || "File upload failed"
+        );
+
+        setFiles((prevFiles) =>
+          prevFiles.filter((f) => f.name !== file.name)
+        );
+      }
+
     });
 
-    if (uploadedFile) {
+    await Promise.all(uploadPromises);
 
-      setFiles((prevFiles) =>
-        prevFiles.filter((f) => f.name !== file.name)
-      );
-
-      // generate share link
-      const link = await generateShareLink(uploadedFile.bucketFileId);
-      await navigator.clipboard.writeText(link);
-
-      toast.success("Share link copied to clipboard");
-
-      console.log("Generated Share Link:", link);
-
-      alert(link);
-    }
-
-  });
-
-  await Promise.all(uploadPromises);
-
-}, [ownerId, accountId, path]);
+  }, [ownerId, accountId, path]);
 
 //   const onDrop = useCallback(async (acceptedFiles: File[]) => {
 
