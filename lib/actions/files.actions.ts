@@ -15,53 +15,6 @@ const handleError = (error: unknown, message: string) => {
   throw error;
 };
 
-// export const uploadFile = async ({
-//   file,
-//   ownerId,
-//   accountId,
-//   path,
-// }: UploadFileProps) => {
-//   const { storage, database } = await createAdminClient();
-
-//   try {
-//     const inputFile = InputFile.fromBuffer(file, file.name);
-
-//     const bucketFile = await storage.createFile(
-//       appwriteConfig.bucketId,
-//       ID.unique(),
-//       inputFile,
-//     );
-
-//     const fileDocument = {
-//       type: getFileType(bucketFile.name).type,
-//       Name: bucketFile.name,
-//       url: constructFileUrl(bucketFile.$id),
-//       extension: getFileType(bucketFile.name).extension,
-//       size: bucketFile.sizeOriginal,
-//       owner: ownerId,
-//       accountId,
-//       users: [],
-//       bucketFileId: bucketFile.$id,
-//     };
-
-//     const newFile = await database
-//       .createDocument(
-//         appwriteConfig.databaseId,
-//         appwriteConfig.filesCollectionId,
-//         ID.unique(),
-//         fileDocument,
-//       )
-//       .catch(async (error: unknown) => {
-//         await storage.deleteFile(appwriteConfig.bucketId, bucketFile.$id);
-//         handleError(error, "Failed to create file document");
-//       });
-
-//     revalidatePath(path);
-//     return parseStringify(newFile);
-//   } catch (error) {
-//     handleError(error, "Failed to upload file");
-//   }
-// };
 
 export const uploadFile = async ({
   file,
@@ -200,7 +153,7 @@ export const getFiles = async ({
   try {
     const currentUser = await getCurrentUser();
 
-    if (!currentUser) throw new Error("User not found");
+    if (!currentUser) return { documents: [] };
 
     const queries = createQueries(currentUser, types, searchText, sort, limit);
 
@@ -343,8 +296,9 @@ export async function getTotalSpaceUsed() {
   try {
     const { database } = await createSessionClient();
     const currentUser = await getCurrentUser();
-    if (!currentUser) throw new Error("User is not authenticated.");
-
+    // if (!currentUser) throw new Error("User is not authenticated.");
+    if (!currentUser) return null;
+    if(!database) return null;
     const files = await database.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.filesCollectionId,

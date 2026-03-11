@@ -100,30 +100,50 @@ export const verifySecret = async ({
   }
 };
 
-export const getCurrentUser = async () => {
-  try {
-    const { database, account } = await createSessionClient();
-    console.log("session created succesfully")
-    const result = await account.get();
-    console.log("result: ",result);
+// export const getCurrentUser = async () => {
+//   try {
+//     const { database, account } = await createSessionClient();
+//     console.log("session created succesfully")
+//     const result = await account.get();
+//     console.log("result: ",result);
 
-    const user = await database.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.usersCollectionId,
-      [Query.equal("accountId", result.$id)],
-    );
+//     const user = await database.listDocuments(
+//       appwriteConfig.databaseId,
+//       appwriteConfig.usersCollectionId,
+//       [Query.equal("accountId", result.$id)],
+//     );
 
-    if (user.total <= 0) return null;
+//     if (user.total <= 0) return null;
 
-    return parseStringify(user.documents[0]);
-  } catch (error) {
-    console.log(error);
+//     return parseStringify(user.documents[0]);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+export async function getCurrentUser() {
+
+  const { database, account } = await createSessionClient();
+
+  if (!account) {
+    console.log("No active session");
+    return null;
   }
-};
+
+  const result = await account.get();
+
+  const user = await database.listDocuments(
+    appwriteConfig.databaseId,
+    appwriteConfig.usersCollectionId,
+    [Query.equal("accountId", result.$id)]
+  );
+
+  return user.documents[0];
+}
 
 export const signOutUser = async () => {
   const { account } = await createSessionClient();
-
+  if(!account) return null;
   try {
     await account.deleteSession("current");
     (await cookies()).delete("appwrite-session");

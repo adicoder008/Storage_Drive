@@ -17,7 +17,9 @@ export const createSessionClient = async () => {
     const session = (await cookies()).get("appwrite-session"); //It tries to read the cookie named "appwrite_session" which stores the user’s session token.
     // const session = (await cookies()).get(`a_session_${appwriteConfig.projectId}`); //It tries to read the cookie named "appwrite_session" which stores the user’s session token.
 
-    if (!session || !session?.value) throw new Error("no session");
+    if (!session || !session?.value) {
+  return { client: null, account: null };
+}
 
     // client.headers["X-Fallback-Cookies"] = `a_session_${appwriteConfig.projectId}=${session.value}`;
     console.log("Session value:", session?.value);

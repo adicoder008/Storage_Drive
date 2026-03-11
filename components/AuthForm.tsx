@@ -1,205 +1,3 @@
-// "use client"
-// import React, { useState } from "react"
-// import { zodResolver } from "@hookform/resolvers/zod"
-// import { useForm } from "react-hook-form"
-// import { z } from "zod"
-// import Link from "next/link"
-// import { Button } from "@/components/ui/button"
-// import {
-//   Form,
-//   FormControl,
-//   FormField,
-//   FormItem,
-//   FormLabel,
-//   FormMessage,
-// } from "@/components/ui/form"
-// import { Input } from "@/components/ui/input"
-
-// import { createAccount, signInUser } from "@/lib/actions/users.action"
-// import OTPmodal from "./OTPmodal"
-// import Image from "next/image";
-
-
-// type AuthFormProps = {
-//   type: "signIn" | "signUp";
-// };
-
-
-// const formSchema = (type: "signIn" | "signUp") => {
-//   return z.object({
-//     username: type === "signUp"
-//       ? z.string({
-//         required_error: "Username is required",
-//         invalid_type_error: "Username must be a string",
-//       }).min(2, { message: "Username must be at least 2 characters" })
-//       : z.string().optional(),
-
-//     email: type === "signUp"
-//       ? z.string({
-//         required_error: "Email is required",
-//         invalid_type_error: "Email must be a valid string",
-//       }).email({ message: "Please enter a valid email address" })
-//       : z.string().optional(),
-//   });
-// };
-
-
-//  const AuthForm = ({ type }: AuthFormProps) => {
-
-//   // const router = useRouter();
-
-//   const [loading, setLoading] = useState(false);
-//   const [errormsg, setErrormsg] = useState("");
-//   const [accountId, setAccountId] = useState<string | null>(null);
-
-//   const schema = formSchema(type);
-
-//     const onSubmit = async (values: z.infer<typeof schema>) => {
-//       setLoading(true);
-//       setErrormsg("");
-//       try {
-//         // if (type === "signUp") {
-//           console.log("Submitting with:", values.username, values.email);
-//           const user = 
-//           type==='signUp'?
-//           await createAccount({
-//             username: values.username || "",
-//             email: values.email || "",
-//           }): await signInUser({email: values.email || ""});
-//           setAccountId(user.accountId);
-//           console.log("Account ID:", user.accountId);
-//         // }
-//         // } else {
-//         //   console.log("Submitting with:", values.username, values.email);
-//         //   const user = await Login({
-//         //     username: values.username || "",
-//         //     email: values.email || "",
-//         //   });
-//         //   console.log("Logged in user:", user);
-//         //   router.push("/");
-//         // }
-//       } catch (error) {
-//         console.error("Error during form submission:", error);
-//         setErrormsg("An error occurred. Please try again.");
-//       } finally {
-//         setLoading(false);
-//       }
-//     }
-    
-
-
-  
-
-//   const form = useForm<z.infer<typeof schema>>({
-//     resolver: zodResolver(schema),
-//     defaultValues: {
-//       username: "",
-//       email: "",
-//     },
-//   });
-
-
-//   return (
-//     <>
-//       <div className="flex flex-col w-full items-center">
-//         <div className="text-3xl text-red-500 font-semibold">{type==="signIn"?"SIGN IN" : "SIGN UP"}</div>
-//         <Form {...form}>
-//           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 auth-form w-3/4">
-//             <h1 className="text-center text-3xl">{type === "signIn" ? "Sign In" : "Sign Up"}</h1>
-//             {type === "signUp" && <FormField
-//               control={form.control}
-//               name="username"
-//               render={({ field }) => (
-//                 <FormItem>
-//                   <FormLabel>Username</FormLabel>
-//                   <FormControl>
-//                     <Input placeholder="Enter your username" {...field} />
-//                   </FormControl>
-//                   {/* <FormDescription>
-//                 This is your public display name.
-//               </FormDescription> */}
-//                   <FormMessage />
-//                 </FormItem>
-//               )}
-//             />}
-//             {type === "signIn" && <FormField
-//               control={form.control}
-//               name="username"
-//               render={({ field }) => (
-//                 <FormItem>
-//                   <FormLabel>Username</FormLabel>
-//                   <FormControl>
-//                     <Input placeholder="Enter your username" {...field} />
-//                   </FormControl>
-//                   {/* <FormDescription>
-//                 This is your public display name.
-//               </FormDescription> */}
-//                   <FormMessage />
-//                 </FormItem>
-//               )}
-//             />}
-//             {type === "signUp" && <FormField
-//               control={form.control}
-//               name="email"
-//               render={({ field }) => (
-//                 <FormItem>
-//                   <FormLabel>Email</FormLabel>
-//                   <FormControl>
-//                     <Input placeholder="Enter your email" {...field} className="shadow-xl " />
-//                   </FormControl>
-//                   {/* <FormDescription>
-//                 This is your public display name.
-//               </FormDescription> */}
-//                   <FormMessage />
-//                 </FormItem>
-//               )}
-//             />}
-//             {type === "signIn" && <FormField
-//               control={form.control}
-//               name="email"
-//               render={({ field }) => (
-//                 <FormItem>
-//                   <FormLabel>Email</FormLabel>
-//                   <FormControl>
-//                     <Input placeholder="Enter your email" {...field} className="shadow-xl " />
-//                   </FormControl>
-//                   {/* <FormDescription>
-//                 This is your public display name.
-//               </FormDescription> */}
-//                   <FormMessage />
-//                 </FormItem>
-//               )}
-//             />}
-//             <Button type="submit" className="w-full text-center bg-red-400 text-white" disabled={loading}>{type === "signIn" ? "Sign In" : "Sign Up"}
-//               {loading && <Image src="/assets/icons/loader.svg" className="animate-spin" alt="loader" width={24}
-//   height={24}  />}
-//             </Button>
-//             {/* we use * for dynamic rendering */}
-//             {errormsg && <p className="text-red-500 text-center">*{errormsg}</p>}
-//             <div className="flex justify-center">
-//               <p className="">{type === "signIn" ? "Dont have an account ? " : "Already have an account ? "}</p>
-//               <Link className="text-red-400" href={type === "signIn" ? "/signUp" : "/signIn"} >{type === "signIn" ? " signUp" : " signIn"}</Link>
-//             </div>
-//           </form>
-//         </Form>
-//         {/* <OTPmodal/> */} 
-//          {/* {accountId && (
-//          <OTPmodal email={form.getValues("email") ?? ""} accountID={accountId ?? ""} />
-//         )} */}
-//          {/* {accountId && ( */}
-//         <OTPmodal email={form.getValues("email")?? ""} accountID={accountId ?? ""} />
-//       {/* )} */}
-        
-//       </div>
-//     </>
-//   );
-// }
-
-
-
-// export default AuthForm
-
-
 "use client";
 
 import React, { useState } from "react";
@@ -208,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Link from "next/link";
 import Image from "next/image";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -242,13 +39,18 @@ const formSchema = (type: "signIn" | "signUp") =>
       .string({
         required_error: "Email is required",
       })
-      .email({ message: "Please enter a valid email address" }),
+      .email({ message: "Enter a valid email address" }),
   });
 
 const AuthForm = ({ type }: AuthFormProps) => {
+
   const [loading, setLoading] = useState(false);
-  const [errormsg, setErrormsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
   const [accountId, setAccountId] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState("");
+
+  const [otpOpen, setOtpOpen] = useState(false);
 
   const schema = formSchema(type);
 
@@ -261,10 +63,12 @@ const AuthForm = ({ type }: AuthFormProps) => {
   });
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
+
     setLoading(true);
-    setErrormsg("");
+    setErrorMsg("");
 
     try {
+
       const user =
         type === "signUp"
           ? await createAccount({
@@ -280,112 +84,166 @@ const AuthForm = ({ type }: AuthFormProps) => {
       }
 
       setAccountId(user.accountId);
+      setUserEmail(values.email);
+      setOtpOpen(true);
+
     } catch (error) {
+
       console.error("Auth error:", error);
-      setErrormsg("Something went wrong. Please try again.");
+      setErrorMsg("Authentication failed. Please try again.");
+
     } finally {
+
       setLoading(false);
+
     }
   };
 
   return (
-    <div className="flex flex-col w-full items-center">
-      <div className="text-3xl text-red-500 font-semibold">
-        {type === "signIn" ? "SIGN IN" : "SIGN UP"}
-      </div>
+    <div className="flex flex-col w-full max-w-md">
 
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 auth-form w-3/4"
-        >
-          <h1 className="text-center text-3xl">
-            {type === "signIn" ? "Sign In" : "Sign Up"}
+      <div className="bg-white rounded-2xl shadow-xl p-8">
+
+        {/* Title */}
+
+        <div className="text-center mb-8">
+
+          <h1 className="text-3xl font-bold text-gray-800">
+            DriveManager
           </h1>
 
-          {type === "signUp" && (
+          <p className="text-gray-500 mt-2 text-sm">
+            {type === "signIn"
+              ? "Sign in to manage your files"
+              : "Create your account to start storing files"}
+          </p>
+
+        </div>
+
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6"
+          >
+
+            {type === "signUp" && (
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+
+                    <FormLabel className="text-gray-700">
+                      Username
+                    </FormLabel>
+
+                    <FormControl>
+                      <Input
+                        placeholder="Enter your username"
+                        {...field}
+                        className="h-11 focus:ring-2 focus:ring-red-400"
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+
+                  </FormItem>
+                )}
+              />
+            )}
+
             <FormField
               control={form.control}
-              name="username"
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+
+                  <FormLabel className="text-gray-700">
+                    Email
+                  </FormLabel>
+
                   <FormControl>
-                    <Input placeholder="Enter your username" {...field} />
+                    <Input
+                      placeholder="Enter your email"
+                      {...field}
+                      className="h-11 focus:ring-2 focus:ring-red-400"
+                    />
                   </FormControl>
+
+                  <p className="text-xs text-gray-400 mt-1">
+                    We'll send a one-time password to this email.
+                  </p>
+
                   <FormMessage />
+
                 </FormItem>
               )}
             />
-          )}
 
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Enter your email"
-                    {...field}
-                    className="shadow-xl"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+            {/* Submit Button */}
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full h-11 bg-red-500 hover:bg-red-600 text-white flex items-center justify-center gap-2"
+            >
+
+              {loading
+                ? "Sending OTP..."
+                : type === "signIn"
+                ? "Send OTP"
+                : "Create Account"}
+
+              {loading && (
+                <Image
+                  src="/assets/icons/loader.svg"
+                  alt="loading"
+                  width={18}
+                  height={18}
+                  className="animate-spin"
+                />
+              )}
+
+            </Button>
+
+            {errorMsg && (
+              <p className="text-red-500 text-sm text-center">
+                {errorMsg}
+              </p>
             )}
-          />
 
-          <Button
-            type="submit"
-            className="w-full flex items-center justify-center gap-2 bg-red-400 text-white"
-            disabled={loading}
-          >
-            {loading
-              ? "Processing..."
-              : type === "signIn"
-              ? "Sign In"
-              : "Sign Up"}
+            {/* Switch Auth */}
 
-            {loading && (
-              <Image
-                src="/assets/icons/loader.svg"
-                alt="loader"
-                width={20}
-                height={20}
-                className="animate-spin"
-              />
-            )}
-          </Button>
+            <div className="text-center text-sm text-gray-500">
 
-          {errormsg && (
-            <p className="text-red-500 text-center">*{errormsg}</p>
-          )}
-
-          <div className="flex justify-center gap-1">
-            <p>
               {type === "signIn"
                 ? "Don't have an account?"
                 : "Already have an account?"}
-            </p>
 
-            <Link
-              className="text-red-400"
-              href={type === "signIn" ? "/signUp" : "/signIn"}
-            >
-              {type === "signIn" ? "Sign Up" : "Sign In"}
-            </Link>
-          </div>
-        </form>
-      </Form>
+              <Link
+                href={type === "signIn" ? "/signUp" : "/signIn"}
+                className="ml-1 text-red-500 font-medium hover:underline"
+              >
+                {type === "signIn" ? "Sign Up" : "Sign In"}
+              </Link>
+
+            </div>
+
+          </form>
+        </Form>
+      </div>
+
+      {/* OTP Modal */}
 
       {accountId && (
         <OTPmodal
-          email={form.getValues("email")}
+          email={userEmail}
           accountID={accountId}
+          open={otpOpen}
+          setOpen={setOtpOpen}
         />
       )}
+
     </div>
   );
 };

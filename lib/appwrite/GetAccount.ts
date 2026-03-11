@@ -9,6 +9,7 @@ export const getCurrentUser = async () => {
 
 
   const account = new Account(client);
+  if(!account){return null}
 
  try {
     // Simply get the current user WITHOUT deleting sessions

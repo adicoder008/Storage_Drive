@@ -1,113 +1,174 @@
 "use client";
-import React from 'react'
-import { useState } from 'react'
+
+import React, { useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 import {
-    AlertDialog,
-    AlertDialogAction,
-    // AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
 import {
-    InputOTP,
-    InputOTPGroup,
-    // InputOTPSeparator,
-    InputOTPSlot,
-} from "@/components/ui/input-otp"
-import {  sendEmailOTP, verifySecret } from '@/lib/actions/users.action'
-import { useRouter } from 'next/navigation'
-import Image from 'next/image';
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
+import { Button } from "@/components/ui/button";
+import { sendEmailOTP, verifySecret } from "@/lib/actions/users.action";
 
-const OTPmodal = ({email,accountID}:{email:string,accountID:string}) => {
-    const router=useRouter();
-    const[isOpen, setIsOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [password, setPassword] = useState("");
+type OTPmodalProps = {
+  email: string;
+  accountID: string;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-    const handleSubmit = async(e:React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        setIsLoading(true);
+const OTPmodal = ({ email, accountID, open, setOpen }: OTPmodalProps) => {
+  const router = useRouter();
 
-        console.log({ accountID, password });
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+
+  const handleVerify = async () => {
+    if (otp.length !== 6) return;
+
+    setLoading(true);
 
     try {
-      const sessionId = await verifySecret({ accountId: accountID, password });
+      const sessionId = await verifySecret({
+        accountId: accountID,
+        password: otp,
+      });
 
-      console.log({ sessionId });
-
-      if (sessionId) router.push("/");
+      if (sessionId) {
+        setOpen(false);
+        router.push("/");
+      }
     } catch (error) {
-      console.log("Failed to verify OTP", error);
+      console.error("OTP verification failed:", error);
     }
 
-        setIsLoading(false);
+    setLoading(false);
+  };
 
+  const handleResend = async () => {
+    setResending(true);
+
+    try {
+      await sendEmailOTP({ email });
+    } catch (error) {
+      console.error("Failed to resend OTP");
     }
 
+    setResending(false);
+  };
 
-    const handleResendOTP = async(e:React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        setIsLoading(true);
-        await sendEmailOTP({email});
-        setIsLoading(false);
-        alert("OTP sent to your email");
-    }
+  return (
+    <Dialog open={open} onOpenChange={setOpen} >
+      <DialogContent className="sm:max-w-md p-8">
 
-    return (
-        <>
+        {/* Close button */}
 
-            <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-                <AlertDialogTrigger>OTP</AlertDialogTrigger>
-                <AlertDialogContent className='bg-white'>
-                    <AlertDialogHeader className='relative flex justify-center'>
-                        <AlertDialogTitle className='text-2xl flex text-center'>
-                            <div className='w-[95%]'>Enter your OTP</div>
-                            <Image src="/assets/icons/close-dark.svg" height={20} width={20} onClick={()=>setIsOpen(false)} alt="" />
-                        </AlertDialogTitle>
-                        <AlertDialogDescription className='text-center text-lg'>
-                            We have sent an email to <span>{email}</span>
+        <button
+          onClick={() => setOpen(false)}
+          className="absolute right-4 top-4 text-gray-400 hover:text-gray-700"
+        >
+          <Image
+            src="/assets/icons/close-dark.svg"
+            alt="close"
+            width={18}
+            height={18}
+          />
+        </button>
 
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
+        <DialogHeader className="text-center space-y-2">
 
-                    <InputOTP maxLength={6} value={password} onChange={(value) => setPassword(value)} className='flex justify-center items-center mt-4'>
-                       <div className='w-full flex justify-center items-center'>
-                        <InputOTPGroup className='flex justify-center items-center text-center'>
-                            <InputOTPSlot index={0} />
-                            <InputOTPSlot index={1} />
-                            <InputOTPSlot index={2} />
-                            <InputOTPSlot index={3} />
-                            <InputOTPSlot index={4} />
-                            <InputOTPSlot index={5} />
-                        </InputOTPGroup>
-                        </div> 
-                    </InputOTP>
+          <DialogTitle className="text-2xl font-semibold">
+            Verify your email
+          </DialogTitle>
 
-                    <AlertDialogFooter>
-                        <div className='flex w-full flex-col gap-4'>
-                            <AlertDialogAction onClick={handleSubmit}  disabled={isLoading} className='bg-red-400 text-lg font-semibold px-3 py-2 text-center'>Submit
-                               {isLoading && (<Image src=".assets/icons/loader.svg" height={24} width={24} className='ml-2 animate-spin' alt="" />)}
-                            </AlertDialogAction>
-                                <div className='text-center'>Didnt get an OTP ?
-                                    <button type='button' className='bg-red-400 px-2 py-1 text-white ml-2 rounded-md' onClick={handleResendOTP} disabled={isLoading}>click to resend</button>
-                                </div>
+          <p className="text-sm text-gray-500">
+            Enter the 6-digit code sent to
+          </p>
 
-                        </div>
-                        {/* <AlertDialogCancel>Cancel</AlertDialogCancel> */}
-                        
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+          <p className="text-sm font-medium text-gray-800">
+            {email}
+          </p>
 
+        </DialogHeader>
 
+        {/* OTP input */}
 
-        </>
-    )
-}
+        <div className="flex justify-center mt-6">
 
-export default OTPmodal
+          <InputOTP
+            maxLength={6}
+            value={otp}
+            onChange={(value) => setOtp(value)}
+          >
+
+            <InputOTPGroup>
+
+              <InputOTPSlot index={0} />
+              <InputOTPSlot index={1} />
+              <InputOTPSlot index={2} />
+              <InputOTPSlot index={3} />
+              <InputOTPSlot index={4} />
+              <InputOTPSlot index={5} />
+
+            </InputOTPGroup>
+
+          </InputOTP>
+
+        </div>
+
+        {/* Verify button */}
+
+        <Button
+          onClick={handleVerify}
+          disabled={otp.length !== 6 || loading}
+          className="w-full mt-6 h-11 bg-red-500 hover:bg-red-600 text-white"
+        >
+          {loading ? (
+            <div className="flex items-center gap-2">
+              Verifying
+              <Image
+                src="/assets/icons/loader.svg"
+                alt="loader"
+                width={18}
+                height={18}
+                className="animate-spin"
+              />
+            </div>
+          ) : (
+            "Verify Code"
+          )}
+        </Button>
+
+        {/* Resend */}
+
+        <p className="text-sm text-center text-gray-500 mt-4">
+
+          Didn’t receive the code?
+
+          <button
+            onClick={handleResend}
+            disabled={resending}
+            className="ml-1 text-red-500 font-medium hover:underline"
+          >
+            {resending ? "Sending..." : "Resend"}
+          </button>
+
+        </p>
+
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default OTPmodal;

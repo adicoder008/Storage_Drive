@@ -32,7 +32,7 @@ export const Chart = ({ used = 0 }: { used: number }) => {
   const chartData = [{ storage: "used", 10: used, fill: "white" }];
 
   return (
-    <Card className="flex items-center rounded-[20px] bg-red-400 p-5 text-white md:flex-col xl:flex-row !important">
+    <Card className="flex items-center rounded-[20px] bg-red-500 p-5 text-white md:flex-col xl:flex-row !important">
       <CardContent className="flex-1 p-0">
         <ChartContainer config={chartConfig} className="mx-auto aspect-square w-[180px] text-white xl:w-[250px] !important">
           <RadialBarChart
@@ -46,7 +46,7 @@ export const Chart = ({ used = 0 }: { used: number }) => {
               gridType="circle"
               radialLines={false}
               stroke="none"
-              className="first:fill-white/20 last:fill-red-400 !important"
+              className="first:fill-white/20 last:fill-red-500 !important"
               polarRadius={[86, 74]}
             />
             <RadialBar dataKey="storage" background cornerRadius={10} />

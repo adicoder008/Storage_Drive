@@ -9,21 +9,24 @@ import  Thumbnail  from "@/components/Thumbnail";
 import { Separator } from "@/components/ui/separator";
 import { getFiles, getTotalSpaceUsed } from "@/lib/actions/files.actions";
 import { convertFileSize, getUsageSummary } from "@/lib/utils";
-// import { useState } from "react";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/actions/users.action";
 
 const Dashboard = async () => {
 
-  // const [search, setSearch] = useState("");
 
-  // Parallel requests
+const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/signIn");
+  }
+
   const [files, totalSpace] = await Promise.all([
     getFiles({ types: [], limit: 10 }),
     getTotalSpaceUsed(),
   ]);
 
-  // Get usage summary
   const usageSummary = getUsageSummary(totalSpace);
-
   return (
     <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 md:grid-cols-2 xl:gap-10 !important">
       <section>

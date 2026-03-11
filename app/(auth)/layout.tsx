@@ -1,25 +1,34 @@
-import React from 'react'
-import Image from 'next/image'
+import React from "react";
 
-const layout = ({children}:{children: React.ReactNode}) => {
+export default function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <>
-    <div className='flex min-h-screen'>
-        <div className='flex flex-col min-h-screen gap-7 bg-red-400 w-[40%] text-white px-4'>
-            <Image src="/assets/icons/logo-full.svg" className='text-center' alt="" height={100} width={250}/>
-            <div className='text-3xl text-center '>Manage your files the best way</div>
-            <div className=''>One stop solution to storing and managing all your documents at one place</div>
-            <Image src="/assets/images/files.png" height={200} width={300} alt="" />
-        </div>
+    <div className="min-h-screen flex">
 
+      {/* Left branding panel */}
 
-        <div className='min-h-screen w-[60%]'>
-          <div className='w-4/5 m-5 h-4/5 p-4 flex justify-center items-center '>{children}</div>
-        </div>
+      <div className="hidden lg:flex flex-col justify-center items-center w-1/2 bg-gradient-to-br from-red-500 to-red-600 text-white p-12">
+
+        <h1 className="text-4xl font-bold mb-6">
+          DriveManager
+        </h1>
+
+        <p className="text-lg text-red-100 text-center max-w-md">
+          Secure cloud storage platform for uploading,
+          organizing, and sharing files with real-time access.
+        </p>
+
+      </div>
+
+      {/* Right auth section */}
+
+      <div className="flex flex-1 items-center justify-center bg-gray-50 px-6">
+        {children}
+      </div>
+
     </div>
-      
-    </>
-  )
+  );
 }
-
-export default layout
