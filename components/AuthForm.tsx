@@ -217,7 +217,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
             <div className="text-center text-sm text-gray-500">
 
               {type === "signIn"
-                ? "Don't have an account?"
+                ? "Don&apos;t have an account?"
                 : "Already have an account?"}
 
               <Link
